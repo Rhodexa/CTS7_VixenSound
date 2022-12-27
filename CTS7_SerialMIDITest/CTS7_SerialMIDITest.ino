@@ -8,6 +8,12 @@ using namespace CTS7;
 byte wave[] = {0x80, 0x8B, 0x98, 0xA4, 0xB0, 0xBB, 0xC6, 0xD0, 0xD9, 0xE2, 0xE9, 0xEF, 0xF5, 0xF9, 0xFC, 0xFE, 0xFF};
 
 void setup(){
+  MIDI.begin(MIDI_CHANNEL_OMNI);
+  Serial.begin(115200);
+  MIDI.setHandleNoteOn(MyHandleNoteOn);
+  MIDI.setHandleNoteOff(MyHandleNoteOff);
+  MIDI.turnThruOff();
+  
   for(byte i = 0; i < 16; i++){
     wave_ram[i   ] = wave[i];
     wave_ram[i+16] = wave[16-i];
@@ -27,11 +33,6 @@ void setup(){
     wave_ram[i+48+128] = 0x80;
   }
   
-  MIDI.begin(MIDI_CHANNEL_OMNI);
-  Serial.begin(115200);
-  MIDI.setHandleNoteOn(MyHandleNoteOn);
-  MIDI.setHandleNoteOff(MyHandleNoteOff);
-  MIDI.turnThruOff();
   CTS7::begin();
 }
 

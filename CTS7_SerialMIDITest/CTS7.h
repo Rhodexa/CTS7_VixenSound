@@ -4,16 +4,23 @@
 #define FROM_PROGMEM(address_short) __LPM((uint16_t)(address_short))
 
 namespace CTS7{
-  /* Settings Constants */
+  /* SETTINGS CONSTANTS — Change these to fit yours needs */
+  /* must be a multiple of 2 */
   const byte VOICE_COUNT = 8;
   
-  /* Core Stuff */
-  const byte LEFT_OUTPUT = 11;   /* No, you can`t change this pins */
+  
+}
+
+namespace CTS7{  
+  /* CORE CONSTANTS — Results from changing these are undefined */
+  const byte quarter_sine_lut[] PROGMEM = {0x80, 0x8B, 0x98, 0xA4, 0xB0, 0xBB, 0xC6, 0xD0, 0xD9, 0xE2, 0xE9, 0xEF, 0xF5, 0xF9, 0xFC, 0xFE, 0xFF};
+  const byte LEFT_OUTPUT  = 11;   /* No, you can`t change this pins */
   const byte RIGHT_OUTPUT = 3;
   auto& DAC_LEFT  = OCR2A;
-  auto& DAC_RIGHT = OCR2B;
+  auto& DAC_RIGHT = OCR2B;  
+  const unsigned int HALF_REF_CLOCK = 31250;
   
-  byte volatile wave_ram[256];
+  byte wave_ram[256];
   byte current_voice = 0;
   
   struct Mixer { uint16_t left, right; } mixer;
@@ -45,12 +52,11 @@ namespace CTS7{
     return 440*pow(1.059463, pitch);
   }
   uint16_t getFnumber(float frequency){
-    return (frequency/(20833.33/(pow(2, 14))));
+    return (frequency/((HALF_REF_CLOCK/VOICE_COUNT)/(pow(2, 14))));
   }
   uint16_t pitchToFnumber(float pitch){
     return getFnumber(getFrequency(pitch));
-  }
-  
+  }  
 }
 
 ISR(TIMER2_OVF_vect){
